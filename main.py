@@ -1,8 +1,8 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 import sqlite3
-import matplotlib.pyplot as plt  # Adicione esta linha para importar o matplotlib
-from Formulario_bd3 import insert_data, fetch_data, get_all_names, busca_produto  # Importando funções de Formulario_bd3
+import matplotlib.pyplot as plt  # Adicionando para importar matplotlib
+from Formulario_bd3 import insert_data, fetch_data, get_all_names, busca_produto, create_table  # Importando a função create_table
 
 st.set_page_config(
     page_title="Sistema de Alertas",
@@ -10,6 +10,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Verificar se a tabela existe, se não criar
+create_table()  # Chamando a função para garantir que a tabela 'users' exista
 
 def carregar_dados():
     dados = fetch_data()
@@ -109,7 +112,8 @@ def pagina_formulario():
 
     if st.button("Enviar"):
         if nome and assunto_alerta:
-            insert_data(nome, assunto_alerta, tipo_alerta, dt_registro.strftime("%d/%m/%Y"), valor, valores_projecao, produto)
+            # Ajuste: Garantir que valores_projecao seja uma string vazia caso não tenha valor
+            insert_data(nome, assunto_alerta, tipo_alerta, dt_registro.strftime("%d/%m/%Y"), valor, valores_projecao if valores_projecao else "", produto)
             st.success("Dados salvos com sucesso!")
         else:
             st.error("Por favor, preencha todos os campos obrigatórios.")
