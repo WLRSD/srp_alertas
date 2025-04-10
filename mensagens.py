@@ -35,9 +35,12 @@ def pagina_mensagens():
         st.subheader("Webhooks Cadastrados")
         for webhook in webhooks:
             with st.expander(f"Webhook {webhook[0]}: {webhook[1]}"):
+                # Mostrar os webhooks existentes com as URLs associadas
+                st.write(f"**URL**: {webhook[1]}")
+                
+                # A lógica de envio de mensagens seria colocada aqui se necessário.
                 if st.button(f"Ativar e Enviar para Webhook {webhook[0]}", key=webhook[0]):
                     st.write("Mensagem enviada para o webhook!")
                     # Aqui você pode fazer a integração real para enviar a mensagem via webhook.
-                st.text("Clique no botão para ativar este webhook e enviar a mensagem.")
     else:
         st.write("Nenhum webhook cadastrado.")

@@ -51,7 +51,7 @@ def insert_data(assunto_alerta, tipo_alerta, dt_registro, valor, valores_projeca
         conn.commit()
 
     conn.close()
-    
+
 def busca_produto():
     con = sqlite3.connect("fat.db") 
     cursor = con.cursor()
@@ -61,7 +61,6 @@ def busca_produto():
     return(dfFat['Produto'])
     cursor.close()
     con.close()
-
 
 def fetch_data(prods=None):
     conn = sqlite3.connect("dados.db")
@@ -81,7 +80,7 @@ def get_all_names():
     names = [row[0] for row in cursor.fetchall()]
     conn.close()
     return [""] + names
-    
+
 def get_all_products():
     conn = sqlite3.connect("dados.db")
     cursor = conn.cursor()
@@ -89,7 +88,7 @@ def get_all_products():
     prods = [row[0] for row in cursor.fetchall()]
     conn.close()
     return [""] + prods    
-    
+
 def busca_valores_liquidos(produto):
     con = sqlite3.connect("fat.db")
     cursor = con.cursor()
@@ -101,7 +100,7 @@ def busca_valores_liquidos(produto):
     cursor.close()
     con.close()
     return valor_liquido if valor_liquido else 0
-    
+
 def busca_valores_brutos(produto):
     con = sqlite3.connect("fat.db")
     cursor = con.cursor()
@@ -114,7 +113,8 @@ def busca_valores_brutos(produto):
     con.close()
     return valor_bruto if valor_bruto else 0 
 
-def main():
+# Função de formulário
+def pagina_formulario():
     st.title("Formulário de Cadastro de Alertas")
     
     create_table()
@@ -123,14 +123,14 @@ def main():
     prod = None
     urc = None
     
-#    nome = st.text_input("Nome")
-    dt_registro = date.today().strftime("%d/%m/%Y")    
+    # Definindo a data de registro
+    dt_registro = date.today().strftime("%d/%m/%Y")  
     
-    Ind_Prod = ["","Sim","Não"]
+    Ind_Prod = ["", "Sim", "Não"]
     prod = st.selectbox("O Alerta será por produto?", Ind_Prod)
     
+    produto = None
     if prod == "Sim":
-#        produtos_lista = busca_produto()
         produtos_lista = ["Hospedagem de Aplicações","Desenvolvimento e Manutenção de Software","Serpro MultiCloud","Atendimento a Ambientes de Rede Local","Gestão de Margem Consignável","Emplaca - Sistema Nacional de Emplacamento","Datavalid","Consulta Online Senatran","Consulta CPF","Radar - Sistema de Gestão de Infrações de Trânsito"]
         produto = st.selectbox("Produtos:", sorted(produtos_lista))
 
@@ -142,13 +142,6 @@ def main():
     if tipo_alerta != "":
         options = ["Faturamento(Valor Bruto)", "Faturamento(Valor Liquido)"]
         assunto_alerta = st.selectbox("Tipo de Faturamento", options)    
-        
-    if assunto_alerta == "Faturamento(Valor Liquido)":
-        valor_formatado = f"R$ {busca_valores_liquidos(produto):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-        st.write(f"Valor atual: {valor_formatado}")
-    elif assunto_alerta == "Faturamento(Valor Bruto)":
-        valor_formatado = f"R$ {busca_valores_brutos(produto):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-        st.write(f"Valor atual: {valor_formatado}")
     
     valor = None 
     valores_projecao = None
@@ -187,7 +180,7 @@ def main():
                         else:
                             st.write(f"**Alerta do Produto: TODOS** ")
                         
-                       
+                        st.write("------------") 
                 else:
                     st.write(f"Nenhum dado encontrado para o produto '{prods_to_search}'.")
         else:
@@ -198,7 +191,6 @@ def main():
         for row in data:
             if row[1] is not None:
                 st.write(f"**Alerta ID:** {row[0]}")
-#                st.write(f"**Nome:** {row[1]}")
                 st.write(f"**Assunto:** {row[1]}")
                 if row[2]:  
                     st.write(f"**Tipo de Alerta:** {row[2]}")
@@ -215,5 +207,6 @@ def main():
             else:
                 st.write("Nenhum dado cadastrado ainda.")
 
+# Bloco principal
 if __name__ == "__main__":
-    main()
+    pagina_formulario()  # Adiciona a função de formulário
