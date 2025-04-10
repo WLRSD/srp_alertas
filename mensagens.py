@@ -1,5 +1,6 @@
 import streamlit as st
 import sqlite3
+import requests  # Para enviar a mensagem via webhook
 
 def cadastrar_webhook(nome, url):
     conn = sqlite3.connect("webhooks.db")
@@ -16,6 +17,20 @@ def obter_webhooks():
     webhooks = cursor.fetchall()
     conn.close()
     return webhooks
+
+def enviar_mensagem_de_teste(url_webhook):
+    mensagem = "Esta é uma mensagem de teste enviada para o webhook!"
+    payload = {
+        "text": mensagem  # Modificado para usar a chave "text" conforme esperado pelo webhook
+    }
+    try:
+        response = requests.post(url_webhook, json=payload)
+        if response.status_code == 200:
+            return "Mensagem de teste enviada com sucesso!"
+        else:
+            return f"Erro ao enviar mensagem. Status: {response.status_code}, Detalhes: {response.text}"
+    except Exception as e:
+        return f"Erro ao enviar mensagem: {e}"
 
 def pagina_mensagens():
     st.title("Mensagens - Webhooks")
@@ -41,9 +56,10 @@ def pagina_mensagens():
                 st.write(f"**Nome**: {nome}")
                 st.write(f"**URL**: {url}")
 
-                # A lógica de envio de mensagens seria colocada aqui se necessário.
-                if st.button(f"Ativar e Enviar para Webhook {nome}", key=f"enviar_{webhook_id}"):
-                    st.write("Mensagem enviada para o webhook!")
+                # Enviar mensagem de teste
+                if st.button(f"Ativar e Enviar mensagem de teste para {nome}", key=f"enviar_{webhook_id}"):
+                    resultado = enviar_mensagem_de_teste(url)
+                    st.success(resultado)  # Exibe o resultado do envio da mensagem
 
     else:
         st.write("Nenhum webhook cadastrado.")
