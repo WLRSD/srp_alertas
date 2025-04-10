@@ -1,8 +1,9 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-import sqlite3
-import matplotlib.pyplot as plt  # Adicionando para importar matplotlib
-from Formulario_bd3 import insert_data, fetch_data, get_all_names, busca_produto, create_table  # Importando a função create_table
+from Formulario_bd3 import insert_data, fetch_data, get_all_names, busca_produto, create_table, busca_valores_brutos, busca_valores_liquidos
+from graficos import pagina_graficos  # Importando a função para gráficos
+import matplotlib.pyplot as plt  # Adicionando a importação do matplotlib
+from mensagens import pagina_mensagens  # Importando a página de mensagens
 
 st.set_page_config(
     page_title="Sistema de Alertas",
@@ -33,52 +34,12 @@ def pagina_home():
         assunto = dado[2]
         assuntos[assunto] = assuntos.get(assunto, 0) + 1
 
-    fig, ax = plt.subplots(figsize=(6, 3))
-    cores = []
-    legenda_labels = {
-        "Faturamento(Valor Bruto)": "Bruto",
-        "Faturamento(Valor Liquido)": "Líquido"
-    }
-    for assunto in assuntos.keys():
-        if assunto == "Faturamento(Valor Bruto)":
-            cores.append("skyblue")
-        else:
-            cores.append("salmon")
+    st.write("**Detalhes dos Alertas**")
+    for assunto, quantidade in assuntos.items():
+        st.write(f"- **{assunto}:** {quantidade} alertas")
 
-    ax.bar(assuntos.keys(), assuntos.values(), color=cores)
-    ax.set_title("Alertas por Tipo de Faturamento")
-    ax.set_ylabel("Quantidade")
-    ax.set_xlabel("Assunto")
-
-    for i, (label, valor) in enumerate(assuntos.items()):
-        ax.text(i, valor + 0.05, str(valor), ha='center')
-
-    handles = [
-        plt.Rectangle((0, 0), 1, 1, color="skyblue", label="Faturamento(Valor Bruto)"),
-        plt.Rectangle((0, 0), 1, 1, color="salmon", label="Faturamento(Valor Liquido)")
-    ]
-    ax.legend(handles=handles)
-
-    st.pyplot(fig)
-
-    st.subheader("Detalhes dos Alertas")
-    col1, col2, col3 = st.columns(3)
-    cols = [col1, col2, col3]
-    for i, dado in enumerate(dados):
-        with cols[i % 3]:
-            valor_raw = dado[5]
-            try:
-                valor_formatado = float(str(valor_raw).replace("R$", "").replace(".", "").replace(",", "."))
-            except:
-                valor_formatado = valor_raw  # fallback se não puder converter
-
-            with st.container(border=True):
-                st.markdown(f"**Alerta ID:** {dado[0]}")
-                st.markdown(f"**Nome:** {dado[1]}")
-                st.markdown(f"**Assunto do Alerta:** {dado[2]}")
-                st.markdown(f"**Tipo de Alerta:** {dado[3]}")
-                st.markdown(f"**Data de Registro:** {dado[4]}")
-                st.markdown(f"**Valor:** R$ {valor_formatado:,.2f}" if isinstance(valor_formatado, float) else f"**Valor:** {valor_formatado}")
+    # Remover gráfico da Home
+    st.write("Página de Alertas com detalhes dos tipos de alerta.")
 
 def pagina_formulario():
     st.title("Formulário de Cadastro de Alertas")
@@ -92,10 +53,10 @@ def pagina_formulario():
     
     produto = None
     if prod == "Sim":
-        produtos_lista = busca_produto()
+        produtos_lista = ["Hospedagem de Aplicações","Desenvolvimento e Manutenção de Software","Serpro MultiCloud","Atendimento a Ambientes de Rede Local","Gestão de Margem Consignável","Emplaca - Sistema Nacional de Emplacamento","Datavalid","Consulta Online Senatran","Consulta CPF","Radar - Sistema de Gestão de Infrações de Trânsito"]
         produto = st.selectbox("Produtos:", sorted(produtos_lista))
     
-    tipo_alerta_options = ["", "Ultrapassar Valor", "Comparar Valores"]
+    tipo_alerta_options = ["", "Valor acima", "Valor abaixo"]
     tipo_alerta = st.selectbox("Tipo de Alerta", tipo_alerta_options)
     
     assunto_alerta = None
@@ -105,15 +66,22 @@ def pagina_formulario():
     
     valor = None
     valores_projecao = None
-    if tipo_alerta == "Ultrapassar Valor":
-        valor = st.number_input("Valor a ultrapassar:")
-    elif tipo_alerta == "Comparar Valores":
-        valores_projecao = "Projeção"
+    if assunto_alerta == "Faturamento(Valor Liquido)":
+        valor_formatado = f"R$ {busca_valores_liquidos(produto):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        st.write(f"Valor atual: {valor_formatado}")
+    elif assunto_alerta == "Faturamento(Valor Bruto)":
+        valor_formatado = f"R$ {busca_valores_brutos(produto):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        st.write(f"Valor atual: {valor_formatado}")
+    
+    if tipo_alerta == "Valor acima":
+        valor = st.number_input("Valor a comparar:")
+    elif tipo_alerta == "Valor abaixo":
+        valor = st.number_input("Valor a comparar:")
 
     if st.button("Enviar"):
         if nome and assunto_alerta:
             # Ajuste: Garantir que valores_projecao seja uma string vazia caso não tenha valor
-            insert_data(nome, assunto_alerta, tipo_alerta, dt_registro.strftime("%d/%m/%Y"), valor, valores_projecao if valores_projecao else "", produto)
+            insert_data(assunto_alerta, tipo_alerta, dt_registro.strftime("%d/%m/%Y"), valor, valores_projecao if valores_projecao else "", produto)
             st.success("Dados salvos com sucesso!")
         else:
             st.error("Por favor, preencha todos os campos obrigatórios.")
@@ -121,8 +89,8 @@ def pagina_formulario():
 def main():
     with st.sidebar:
         escolha = option_menu(
-            "Menu", ["Home", "Criar Alerta"],
-            icons=["house", "plus-circle"],
+            "Menu", ["Home", "Criar Alerta", "Gráficos", "Mensagens"],
+            icons=["house", "plus-circle", "bar-chart", "chat"],
             menu_icon="cast", default_index=0,
             orientation="vertical"
         )
@@ -131,6 +99,10 @@ def main():
         pagina_home()
     elif escolha == "Criar Alerta":
         pagina_formulario()
+    elif escolha == "Gráficos":
+        pagina_graficos()  # Chamando a função do arquivo graficos.py
+    elif escolha == "Mensagens":
+        pagina_mensagens()  # Chamando a função do arquivo mensagens.py
 
 if __name__ == "__main__":
     main()
