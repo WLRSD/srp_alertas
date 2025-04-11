@@ -48,9 +48,9 @@ def pagina_home():
             try:
                 valor_formatado = float(str(valor_raw).replace("R$", "").replace(".", "").replace(",", "."))
             except:
-                valor_formatado = valor_raw  # fallback se não puder converter
+                valor_formatado = valor_raw  
 
-            # Criando um box ao redor de cada alerta com uma borda
+            
             with st.container():
                 st.markdown(f"""
                     <div style="border: 2px solid #444; padding: 10px; border-radius: 5px; background-color: #2E2E2E; margin-bottom: 20px;">
@@ -69,7 +69,7 @@ def pagina_formulario():
     nome = st.text_input("Nome")
     dt_registro = st.date_input("Data de Criação")
     
-    # Adicionando a lógica do novo formulário
+    
     Ind_Prod = ["", "Sim", "Não"]
     prod = st.selectbox("O Alerta será por produto?", Ind_Prod)
     
@@ -102,7 +102,7 @@ def pagina_formulario():
 
     if st.button("Enviar"):
         if nome and assunto_alerta:
-            # Ajuste: Garantir que valores_projecao seja uma string vazia caso não tenha valor
+            
             insert_data(assunto_alerta, tipo_alerta, dt_registro.strftime("%d/%m/%Y"), valor, valores_projecao if valores_projecao else "", produto)
             st.success("Dados salvos com sucesso!")
         else:

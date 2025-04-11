@@ -1,10 +1,10 @@
 import streamlit as st
 import matplotlib.pyplot as plt
-from Formulario_bd3 import fetch_data  # Importando a função para pegar os dados
+from Formulario_bd3 import fetch_data  
 
 def pagina_graficos():
     st.title("Gráficos de Alertas")
-    dados = fetch_data()  # Pega todos os dados dos alertas
+    dados = fetch_data()  
 
     if not dados:
         st.warning("Nenhum alerta cadastrado.")
@@ -17,7 +17,7 @@ def pagina_graficos():
         assunto = dado[2]
         assuntos[assunto] = assuntos.get(assunto, 0) + 1
 
-    # Gráfico de barras
+    
     fig, ax = plt.subplots(figsize=(6, 3))
     cores = []
     legenda_labels = {

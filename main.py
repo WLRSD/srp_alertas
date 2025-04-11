@@ -3,9 +3,9 @@ from streamlit_option_menu import option_menu
 import sqlite3
 import matplotlib.pyplot as plt
 from Formulario_bd3 import insert_data, fetch_data, get_all_names, busca_produto, create_table, busca_valores_brutos, busca_valores_liquidos, pagina_formulario
-from graficos import pagina_graficos  # Importando a função para gráficos
-from pagina_home import pagina_home  # Importando a página home
-from mensagens import pagina_mensagens  # Importando a página de mensagens
+from graficos import pagina_graficos  
+from pagina_home import pagina_home  
+from mensagens import pagina_mensagens  
 
 st.set_page_config(
     page_title="Sistema de Alertas",
@@ -14,8 +14,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Verificar se a tabela existe, se não criar
-create_table()  # Chamando a função para garantir que a tabela 'users' exista
+
+create_table()  
 
 def main():
     with st.sidebar:
@@ -27,13 +27,13 @@ def main():
         )
 
     if escolha == "Home":
-        pagina_home()  # Chamando a função do arquivo pagina_home.py
+        pagina_home()  
     elif escolha == "Criar Alerta":
-        pagina_formulario()  # Já está com a função do formulário correto
+        pagina_formulario()  
     elif escolha == "Gráficos":
-        pagina_graficos()  # Chamando a função do arquivo graficos.py
+        pagina_graficos()  
     elif escolha == "Mensagens":
-        pagina_mensagens()  # Chamando a função do arquivo mensagens.py
+        pagina_mensagens()  
 
 if __name__ == "__main__":
     main()

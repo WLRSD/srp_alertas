@@ -12,7 +12,7 @@ def check_table_exists():
     return result is not None
 
 def create_table():
-    # Verificar se a tabela já existe antes de tentar criá-la
+    
     if not check_table_exists():
         conn = sqlite3.connect("dados.db")
         cursor = conn.cursor()
@@ -37,7 +37,7 @@ def insert_data(assunto_alerta, tipo_alerta, dt_registro, valor, valores_projeca
     conn = sqlite3.connect("dados.db")
     cursor = conn.cursor()
 
-    # Verifica se já existe um registro com o mesmo nome e assunto
+    
     cursor.execute("""
         SELECT id FROM users WHERE assunto_alerta = ? AND tipo_alerta = ? AND valor = ? AND produto = ?
     """, (assunto_alerta,tipo_alerta, valor, produto))
@@ -113,7 +113,7 @@ def busca_valores_brutos(produto):
     con.close()
     return valor_bruto if valor_bruto else 0 
 
-# Função de formulário
+
 def pagina_formulario():
     st.title("Formulário de Cadastro de Alertas")
     
@@ -123,7 +123,7 @@ def pagina_formulario():
     prod = None
     urc = None
     
-    # Definindo a data de registro
+    
     dt_registro = date.today().strftime("%d/%m/%Y")  
     
     Ind_Prod = ["", "Sim", "Não"]
@@ -207,6 +207,6 @@ def pagina_formulario():
             else:
                 st.write("Nenhum dado cadastrado ainda.")
 
-# Bloco principal
+
 if __name__ == "__main__":
-    pagina_formulario()  # Adiciona a função de formulário
+    pagina_formulario()  
