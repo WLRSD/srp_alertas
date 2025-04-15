@@ -18,7 +18,7 @@ _________
     3. Página home: Talvez possamos inserir na pagima de home um bot para responder algumas coisas, como linha de frente para os problemas mais repetidos
 ![alt text](image.png)
 [Magic chat - esboço de como seria](https://weaviate-magic-chat.streamlit.app/?ref=streamlit-io-gallery-favorites)
-[streamly](https://streamly.streamlit.app/?ref=streamlit-io-gallery-favorites)
+[streamly](https://streamly.streamlit.app/?**ref**=streamlit-io-gallery-favorites)
 
     4. criação de uma busca por erros/lista de algo. Não sei bem como eu utilizaria isso...
 [Tissues streamlit](https://tissues.streamlit.app/)
